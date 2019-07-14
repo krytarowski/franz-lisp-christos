@@ -1,0 +1,50 @@
+# 
+# Header: Makefile,v 1.12 87/12/17 12:56:59 root Exp 
+#
+#  Franz Lisp C coded kernel, Machine independent part.
+#
+#  The directions for modifying this file are found in the machine
+# dependent Makefiles (subdirectories vax/ or 68k/)
+
+NOMAN=yes
+WARNS=2	# XXX: const!
+.include <bsd.own.mk>
+
+PROG=rawlisp
+
+.if 0
+COPTS=-m32
+LDFLAGS+=-m32
+AFLAGS+=-m32
+MACHINE_ARCH:=i386
+SHLIBINSTALLDIR=/usr/lib
+.endif
+
+COPTS+=-O0
+
+CPPFLAGS+=-I${.CURDIR}/../include -DMACHINE=\"${MACHINE}\"
+CPPFLAGS+=-DLISPDIR=\"/usr/lib/lisp\"
+
+SRCS=	adbig.c alloc.c calqhat.c clinkfns.c data.c debug.c divbig.c \
+	dmlad.c dodiv.c dsmult.c ediv.c emul.c error.c eval.c \
+	eval2.c evalf.c exarith.c fasl.c fex1.c fex2.c fex3.c fex4.c \
+	fexr.c ffasl.c fpipe.c frame.c generic.c inewint.c inits.c io.c \
+	lam1.c lam2.c lam3.c lam4.c lam5.c lam6.c lam7.c lam8.c lam9.c \
+	lamgc.c lamp.c lamr.c lisp.c low.c mlsb.c mulbig.c \
+	nargs.c pbignum.c prunei.c qfuncl.c subbig.c sysat.c trace.c
+
+LDADD+=-ltermlib -lm
+DPADD+=${LIBTERMLIB} ${LIBM}
+
+.PATH: ${.CURDIR}/arch/${MACHINE_ARCH}
+.if exists(arch/${MACHINE_ARCH}/callg.S)
+SRCS+=callg.S
+.else
+SRCS+=callg.c
+.endif
+
+SHLIBDIR:=/usr/lib
+.include <bsd.prog.mk>
+
+foo:
+	echo ${SRCS}
